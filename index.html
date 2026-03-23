@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <meta name="theme-color" content="#b4ff78"/>
+  <meta name="description" content="Seconds mein AI se professional content likho — Blog, Instagram, YouTube aur bahut kuch!"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="ContentCraft"/>
+  <meta property="og:title" content="ContentCraft AI — AI Content Writer"/>
+  <meta property="og:description" content="Seconds mein Blog, Instagram, YouTube content likho — FREE!"/>
+  <meta property="og:type" content="website"/>
+  <title>ContentCraft AI</title>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="apple-touch-icon" href="/icons/icon-192.png"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    :root {
+      --g: #b4ff78;
+      --b: #78d4ff;
+      --dk: #080c08;
+      --safe-top: env(safe-area-inset-top);
+      --safe-bottom: env(safe-area-inset-bottom);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    html { scroll-behavior:smooth; }
+    body {
+      background: var(--dk);
+      color: #e0e0d8;
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      padding-top: var(--safe-top);
+      padding-bottom: var(--safe-bottom);
+      overflow-x: hidden;
+    }
+    body::before {
+      content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+      background-image: radial-gradient(circle at 1px 1px, rgba(180,255,120,0.06) 1px, transparent 0);
+      background-size:32px 32px;
+    }
+
+    /* ── INSTALL BANNER ── */
+    #install-banner {
+      position:fixed; bottom:0; left:0; right:0; z-index:1000;
+      background:linear-gradient(135deg,rgba(10,15,10,0.97),rgba(13,17,23,0.97));
+      border-top:1px solid rgba(180,255,120,0.3);
+      padding:16px 20px calc(16px + var(--safe-bottom));
+      display:none; align-items:center; gap:14px;
+      backdrop-filter:blur(20px);
+    }
+    #install-banner.show { display:flex; animation:slideUp 0.4s ease; }
+    .install-icon { width:48px; height:48px; border-radius:12px; background:linear-gradient(135deg,var(--g),var(--b)); display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; }
+    .install-text { flex:1; }
+    .install-text strong { display:block; color:#fff; font-size:14px; }
+    .install-text span { color:#888; font-size:12px; }
+    .install-btns { display:flex; gap:8px; flex-shrink:0; }
+    .btn-install { background:linear-gradient(135deg,var(--g),var(--b)); color:var(--dk); border:none; padding:10px 18px; border-radius:10px; font-weight:800; font-size:13px; cursor:pointer; }
+    .btn-dismiss { background:transparent; color:#666; border:none; font-size:13px; cursor:pointer; padding:10px; }
+
+    /* ── OFFLINE BANNER ── */
+    #offline-banner { background:#ff6b6b; color:#fff; text-align:center; padding:8px; font-size:13px; display:none; }
+    #offline-banner.show { display:block; }
+
+    /* ── RATE LIMIT BANNER ── */
+    #rate-banner {
+      background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.3);
+      border-radius: 10px; padding: 10px 14px; margin-bottom: 16px;
+      color: #ff6b6b; font-size: 13px; display: none; text-align: center;
+    }
+    #rate-banner.show { display: block; animation: fadeIn 0.3s ease; }
+
+    /* ── APP CONTAINER ── */
+    #app { position:relative; z-index:1; max-width:860px; margin:0 auto; padding:32px 16px 100px; }
+
+    /* ── HEADER ── */
+    .header { text-align:center; margin-bottom:28px; }
+    .ai-badge {
+      display:inline-block;
+      background:linear-gradient(90deg,var(--g),#78ffb4);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      font-size:11px; font-family:monospace; letter-spacing:4px;
+      text-transform:uppercase; margin-bottom:10px;
+    }
+    h1 {
+      font-family:'Syne',sans-serif; font-weight:900;
+      font-size:clamp(32px,8vw,60px); line-height:1.05;
+      background:linear-gradient(135deg,#fff 0%,var(--g) 60%,var(--b) 100%);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      margin-bottom:8px;
+    }
+    .subtitle { color:#888; font-size:14px; }
+
+    /* ── STATUS BAR ── */
+    .status-bar { display:flex; justify-content:center; gap:10px; margin-bottom:24px; flex-wrap:wrap; }
+    .status-pill {
+      border-radius:20px; padding:6px 16px; font-size:12px;
+      font-family:monospace; border:1px solid rgba(255,255,255,0.1);
+      background:rgba(255,255,255,0.04); color:#aaa;
+    }
+    .status-pill.pro { border-color:var(--g); background:rgba(180,255,120,0.1); color:var(--g); }
+    .status-pill.warn { border-color:#ff6b6b; color:#ff6b6b; }
+    .upgrade-btn {
+      background:linear-gradient(135deg,var(--g),var(--b));
+      border:none; border-radius:20px; padding:6px 18px;
+      color:var(--dk); font-size:12px; font-weight:800; cursor:pointer;
+    }
+
+    /* ── SECTION LABEL ── */
+    .label { font-size:10px; letter-spacing:2px; color:var(--g); text-transform:uppercase; font-family:monospace; display:block; margin-bottom:10px; }
+    .label.blue { color:var(--b); }
+
+    /* ── CONTENT TYPE GRID ── */
+    .type-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(155px,1fr)); gap:8px; margin-bottom:22px; }
+    .type-btn {
+      padding:10px 12px; border-radius:10px; font-size:13px;
+      font-family:'DM Sans',sans-serif; text-align:left; cursor:pointer;
+      border:1px solid rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.03); color:#aaa;
+      transition:all 0.2s; position:relative;
+    }
+    .type-btn.active { border-color:var(--g); background:rgba(180,255,120,0.1); color:var(--g); }
+    .lock-icon { position:absolute; top:6px; right:8px; font-size:10px; }
+
+    /* ── INPUT ── */
+    .input-wrap { margin-bottom:20px; }
+    textarea {
+      width:100%; padding:14px 16px; border-radius:12px;
+      background:rgba(255,255,255,0.05);
+      border:1.5px solid rgba(255,255,255,0.1);
+      color:#fff; font-size:15px; font-family:'DM Sans',sans-serif;
+      outline:none; resize:none; min-height:80px;
+      transition:border 0.2s;
+    }
+    textarea:focus { border-color:rgba(180,255,120,0.5); box-shadow:0 0 0 3px rgba(180,255,120,0.07); }
+    .error-msg { color:#ff6b6b; font-size:12px; margin-top:6px; }
+
+    /* ── PILLS ROW ── */
+    .pills { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:20px; }
+    .pill {
+      padding:6px 13px; border-radius:20px; font-size:12px; cursor:pointer;
+      border:1px solid rgba(255,255,255,0.1); background:transparent; color:#888;
+      font-family:'DM Sans',sans-serif; transition:all 0.2s;
+    }
+    .pill.active-g { border-color:var(--g); background:rgba(180,255,120,0.12); color:var(--g); }
+    .pill.active-b { border-color:var(--b); background:rgba(120,212,255,0.1); color:var(--b); }
+    .pill.locked { color:#444; }
+
+    /* ── GENERATE BTN ── */
+    #gen-btn {
+      width:100%; padding:16px; border-radius:14px; border:none;
+      background:linear-gradient(135deg,var(--g),var(--b));
+      color:var(--dk); font-size:16px; font-weight:800;
+      font-family:'DM Sans',sans-serif; cursor:pointer;
+      transition:all 0.3s; margin-bottom:24px; letter-spacing:0.5px;
+    }
+    #gen-btn:disabled { background:rgba(180,255,120,0.2); color:var(--g); cursor:not-allowed; }
+    .spinner {
+      display:inline-block; width:16px; height:16px;
+      border:2px solid var(--g); border-top-color:transparent;
+      border-radius:50%; animation:spin 0.8s linear infinite;
+      vertical-align:middle; margin-right:8px;
+    }
+
+    /* ── OUTPUT ── */
+    #output-box {
+      background:rgba(255,255,255,0.03); border:1.5px solid rgba(180,255,120,0.2);
+      border-radius:16px; padding:22px; display:none; animation:fadeIn 0.4s ease;
+    }
+    .out-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+    .out-meta { display:flex; gap:12px; align-items:center; }
+    .out-label { color:var(--g); font-size:12px; font-family:monospace; }
+    .word-count { background:rgba(180,255,120,0.1); color:var(--g); padding:2px 10px; border-radius:20px; font-size:11px; font-family:monospace; }
+    .copy-btn {
+      padding:7px 16px; border-radius:8px; border:1px solid rgba(255,255,255,0.12);
+      background:rgba(255,255,255,0.06); color:#ccc; cursor:pointer;
+      font-size:12px; font-family:'DM Sans',sans-serif; transition:all 0.2s;
+    }
+    .copy-btn.copied { background:rgba(180,255,120,0.15); color:var(--g); }
+    #output-text { color:#ddd; font-size:14px; line-height:1.85; white-space:pre-wrap; word-break:break-word; }
+    .regen-btn {
+      margin-top:16px; padding:8px 18px; border-radius:8px;
+      border:1px solid rgba(180,255,120,0.25); background:transparent;
+      color:var(--g); cursor:pointer; font-size:12px; font-family:'DM Sans',sans-serif;
+    }
+
+    /* ── PAYWALL OVERLAY ── */
+    #paywall {
+      position:fixed; inset:0; z-index:500;
+      background:rgba(8,12,8,0.96); backdrop-filter:blur(16px);
+      display:none; align-items:center; justify-content:center; padding:24px;
+    }
+    #paywall.show { display:flex; animation:fadeIn 0.3s ease; }
+    .paywall-card {
+      background:rgba(255,255,255,0.05); border:1.5px solid var(--g);
+      border-radius:24px; padding:40px 28px; max-width:400px; width:100%; text-align:center;
+    }
+    .paywall-card h2 { font-family:'Syne',sans-serif; font-size:26px; font-weight:900; color:#fff; margin:12px 0 8px; }
+    .paywall-card p { color:#888; font-size:14px; line-height:1.7; margin-bottom:24px; }
+    .benefit-list { background:rgba(180,255,120,0.05); border-radius:12px; padding:14px 18px; margin-bottom:22px; text-align:left; }
+    .benefit-list div { color:#ccc; font-size:13px; padding:5px 0; border-bottom:1px solid rgba(255,255,255,0.05); }
+    .benefit-list div:last-child { border:none; }
+    .price-big { font-family:'Syne',sans-serif; font-size:48px; font-weight:900; color:#fff; }
+    .price-big sup { font-size:22px; vertical-align:top; margin-top:10px; color:var(--g); }
+    .price-big sub { font-size:15px; color:#666; font-weight:400; }
+    .pay-btn {
+      width:100%; padding:15px; border-radius:12px; border:none;
+      background:linear-gradient(135deg,var(--g),var(--b));
+      color:var(--dk); font-size:16px; font-weight:800;
+      font-family:'DM Sans',sans-serif; cursor:pointer; margin:16px 0 10px;
+    }
+    .pay-btn:disabled { opacity:0.6; cursor:not-allowed; }
+    .pay-methods { color:#555; font-size:11px; margin-bottom:14px; }
+    .back-btn { background:none; border:none; color:#666; font-size:13px; cursor:pointer; font-family:'DM Sans',sans-serif; }
+
+    /* ── SUCCESS TOAST ── */
+    #toast {
+      position:fixed; top:24px; left:50%; transform:translateX(-50%);
+      background:rgba(180,255,120,0.15); border:1px solid var(--g);
+      border-radius:12px; padding:12px 24px; color:var(--g);
+      font-size:14px; font-weight:700; z-index:999;
+      display:none; white-space:nowrap; animation:fadeIn 0.3s ease;
+    }
+    #toast.show { display:block; }
+
+    /* ── FOOTER ── */
+    .footer { text-align:center; color:#333; font-size:11px; margin-top:40px; font-family:monospace; }
+
+    @keyframes spin { to { transform:rotate(360deg); } }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes slideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+
+    @media(max-width:480px) {
+      .type-grid { grid-template-columns:repeat(2,1fr); }
+      h1 { font-size:36px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="offline-banner">📶 Internet nahi hai — Kuch features kaam nahi karenge</div>
+
+<div id="install-banner">
+  <div class="install-icon">✦</div>
+  <div class="install-text">
+    <strong>ContentCraft AI Install Karo</strong>
+    <span>Phone pe app icon ban jaayega — FREE!</span>
+  </div>
+  <div class="install-btns">
+    <button class="btn-install" id="install-btn">Install</button>
+    <button class="btn-dismiss" id="dismiss-btn">✕</button>
+  </div>
+</div>
+
+<div id="toast">🎉 Pro unlock ho gaya! Sab features available!</div>
+
+<div id="paywall">
+  <div class="paywall-card">
+    <div style="font-size:44px">🔒</div>
+    <h2>Pro Feature!</h2>
+    <p>Yeh feature sirf <strong style="color:#b4ff78">Pro users</strong> ke liye hai.<br/>Upgrade karo — sab unlock ho jaayega!</p>
+    <div class="benefit-list">
+      <div>✅ Unlimited generations (no daily limit)</div>
+      <div>✅ Saare 8 content types</div>
+      <div>✅ Saari 7 languages (Punjabi, Tamil...)</div>
+      <div>✅ Saare 6 tones</div>
+      <div>✅ Priority support</div>
+    </div>
+    <div class="price-big"><sup>₹</sup>129<sub>/month</sub></div>
+    <button class="pay-btn" id="pay-btn">🚀 Pro Upgrade Karo — ₹129/month</button>
+    <div class="pay-methods">UPI • Card • Net Banking • Wallet</div>
+    <button class="back-btn" id="back-btn">← Wapas jao (Free use karo)</button>
+  </div>
+</div>
+
+<div id="app">
+  <div class="header">
+    <div class="ai-badge">✦ AI-Powered ✦</div>
+    <h1>ContentCraft AI</h1>
+    <p class="subtitle">Seconds mein professional content generate karo 🚀</p>
+  </div>
+
+  <div class="status-bar" id="status-bar"></div>
+
+  <!-- Rate limit warning banner -->
+  <div id="rate-banner"></div>
+
+  <span class="label">Content Type Chuniye</span>
+  <div class="type-grid" id="type-grid"></div>
+
+  <div class="input-wrap">
+    <span class="label">Topic / Subject</span>
+    <textarea id="topic-input" placeholder="e.g. Benefits of green tea, Diwali sale promotion..." rows="3"></textarea>
+    <div class="error-msg" id="error-msg"></div>
+  </div>
+
+  <span class="label">Tone</span>
+  <div class="pills" id="tone-pills"></div>
+
+  <span class="label blue">Language</span>
+  <div class="pills" id="lang-pills"></div>
+
+  <button id="gen-btn">✦ Content Generate Karo</button>
+
+  <div id="output-box">
+    <div class="out-header">
+      <div class="out-meta">
+        <span class="out-label">✦ Generated Content</span>
+        <span class="word-count" id="word-count">0 words</span>
+      </div>
+      <button class="copy-btn" id="copy-btn">📋 Copy</button>
+    </div>
+    <div id="output-text"></div>
+    <button class="regen-btn" id="regen-btn">🔄 Dobara Generate Karo</button>
+  </div>
+
+  <div class="footer" id="footer-text">Powered by Claude AI • ContentCraft v2.0</div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+// ═══════════════════════════════════════════════════
+// ⚙️ SETTINGS
+// ═══════════════════════════════════════════════════
+const CONFIG = {
+  RAZORPAY_KEY:    "rzp_live_XXXXXXXXXXXXXXXX",
+  PRO_AMOUNT:      12900,
+  FREE_DAILY:      3,          // Free users: 3 generations per day
+  MIN_WAIT_SEC:    15,         // Min seconds between requests (rate limit)
+  MAX_PER_MINUTE:  3,          // Max requests per 60 seconds
+  APP_NAME:        "ContentCraft AI",
+};
+
+const CONTENT_TYPES = [
+  { id:"blog",      label:"📝 Blog Post",           prompt:"Write a detailed blog post about",              pro:false },
+  { id:"instagram", label:"📸 Instagram Caption",   prompt:"Write 5 Instagram captions with emojis and hashtags for", pro:false },
+  { id:"youtube",   label:"🎬 YouTube Script",      prompt:"Write a YouTube video script intro and outline for", pro:false },
+  { id:"ad",        label:"💰 Ad Copy",             prompt:"Write persuasive advertisement copy for",      pro:true  },
+  { id:"email",     label:"📧 Email Newsletter",    prompt:"Write a professional email newsletter about",  pro:true  },
+  { id:"tweet",     label:"🐦 Twitter Thread",      prompt:"Write a viral Twitter thread (10 tweets) about", pro:true },
+  { id:"product",   label:"🛒 Product Description", prompt:"Write a compelling product description for",   pro:true  },
+  { id:"seo",       label:"🔍 SEO Article",         prompt:"Write an SEO-optimized article with headings about", pro:true },
+];
+
+const FREE_LANGS = ["English","Hindi"];
+const ALL_LANGS  = ["English","Hindi","Hinglish","Punjabi","Gujarati","Tamil","Bengali"];
+const TONES      = ["Professional","Casual","Funny","Inspirational","Persuasive","Informative"];
+
+// ── State ─────────────────────────────────────────
+let state = {
+  selectedType: CONTENT_TYPES[0],
+  tone:         "Professional",
+  language:     "English",
+  isPro:        localStorage.getItem("cc_pro") === "true",
+  usesToday:    parseInt(localStorage.getItem(`cc_uses_${new Date().toDateString()}`) || "0"),
+};
+
+// ── Rate Limiting Helpers ─────────────────────────
+const todayKey     = () => `cc_uses_${new Date().toDateString()}`;
+const getLastReqAt = () => parseInt(localStorage.getItem("cc_last_req") || "0");
+const setLastReqAt = () => localStorage.setItem("cc_last_req", Date.now().toString());
+
+// Track requests in last 60 seconds (stored as JSON array of timestamps)
+function getRecentTimestamps() {
+  try {
+    const arr = JSON.parse(localStorage.getItem("cc_req_ts") || "[]");
+    const now = Date.now();
+    return arr.filter(t => now - t < 60000); // keep last 60s only
+  } catch { return []; }
+}
+function addTimestamp() {
+  const arr = getRecentTimestamps();
+  arr.push(Date.now());
+  localStorage.setItem("cc_req_ts", JSON.stringify(arr));
+}
+
+// Returns { allowed: bool, reason: string, waitSec: number }
+function checkRateLimit() {
+  if (state.isPro) {
+    // Pro users: only per-minute limit (generous)
+    const recent = getRecentTimestamps();
+    if (recent.length >= CONFIG.MAX_PER_MINUTE * 2) {
+      const oldest = recent[0];
+      const waitSec = Math.ceil((60000 - (Date.now() - oldest)) / 1000);
+      return { allowed: false, reason: `Zyada requests ho gayi! ${waitSec}s baad try karo.`, waitSec };
+    }
+    return { allowed: true };
+  }
+
+  // Free users: daily limit check
+  if (state.usesToday >= CONFIG.FREE_DAILY) {
+    return { allowed: false, reason: `Aaj ke ${CONFIG.FREE_DAILY} free generations use ho gaye! Pro upgrade karo ya kal wapas aao. 🌙`, waitSec: 0 };
+  }
+
+  // Free users: minimum wait between requests
+  const lastReq = getLastReqAt();
+  const elapsed = (Date.now() - lastReq) / 1000;
+  if (lastReq > 0 && elapsed < CONFIG.MIN_WAIT_SEC) {
+    const waitSec = Math.ceil(CONFIG.MIN_WAIT_SEC - elapsed);
+    return { allowed: false, reason: `Thoda wait karo! ${waitSec} seconds baad dobara try karo. ⏳`, waitSec };
+  }
+
+  // Free users: per-minute limit
+  const recent = getRecentTimestamps();
+  if (recent.length >= CONFIG.MAX_PER_MINUTE) {
+    const oldest = recent[0];
+    const waitSec = Math.ceil((60000 - (Date.now() - oldest)) / 1000);
+    return { allowed: false, reason: `Bahut fast requests! ${waitSec}s baad try karo. 🚦`, waitSec };
+  }
+
+  return { allowed: true };
+}
+
+function incUses() {
+  state.usesToday++;
+  localStorage.setItem(todayKey(), state.usesToday.toString());
+  setLastReqAt();
+  addTimestamp();
+}
+
+const unlockPro = () => { state.isPro = true; localStorage.setItem("cc_pro", "true"); };
+const usesLeft  = () => CONFIG.FREE_DAILY - state.usesToday;
+
+// ── Render Status Bar ─────────────────────────────
+function renderStatus() {
+  const bar = document.getElementById("status-bar");
+  if (state.isPro) {
+    bar.innerHTML = `<div class="status-pill pro">⭐ Pro User — Unlimited Access</div>`;
+    document.getElementById("footer-text").textContent = "Powered by Claude AI • ContentCraft v2.0 ⭐ Pro";
+  } else {
+    const left = usesLeft();
+    bar.innerHTML = `
+      <div class="status-pill ${left <= 0 ? "warn" : ""}">
+        ${left <= 0 ? "❌ Aaj ka limit khatam" : `🆓 ${left}/${CONFIG.FREE_DAILY} free baaki`}
+      </div>
+      <button class="upgrade-btn" onclick="showPaywall()">⚡ Pro — ₹129/mo</button>`;
+  }
+}
+
+// ── Render Content Types ──────────────────────────
+function renderTypes() {
+  const grid = document.getElementById("type-grid");
+  grid.innerHTML = CONTENT_TYPES.map(t => `
+    <button class="type-btn ${state.selectedType.id === t.id ? "active" : ""}"
+      onclick="selectType('${t.id}')">
+      ${t.label}
+      ${t.pro && !state.isPro ? '<span class="lock-icon">🔒</span>' : ""}
+    </button>`).join("");
+}
+
+function selectType(id) {
+  const t = CONTENT_TYPES.find(x => x.id === id);
+  if (t.pro && !state.isPro) { showPaywall(); return; }
+  state.selectedType = t;
+  renderTypes();
+}
+
+// ── Render Pills ──────────────────────────────────
+function renderPills() {
+  document.getElementById("tone-pills").innerHTML = TONES.map(t =>
+    `<button class="pill ${state.tone === t ? "active-g" : ""}" onclick="selectTone('${t}')">${t}</button>`
+  ).join("");
+
+  document.getElementById("lang-pills").innerHTML = ALL_LANGS.map(l => {
+    const locked = !FREE_LANGS.includes(l) && !state.isPro;
+    return `<button class="pill ${state.language === l ? "active-b" : ""} ${locked ? "locked" : ""}"
+      onclick="${locked ? "showPaywall()" : `selectLang('${l}')`}">${l}${locked ? " 🔒" : ""}</button>`;
+  }).join("");
+}
+
+function selectTone(t) { state.tone = t; renderPills(); }
+function selectLang(l) { state.language = l; renderPills(); }
+
+// ── Show Rate Banner ──────────────────────────────
+function showRateBanner(msg) {
+  const el = document.getElementById("rate-banner");
+  el.textContent = msg;
+  el.classList.add("show");
+  setTimeout(() => el.classList.remove("show"), 5000);
+}
+
+// ── Generate ──────────────────────────────────────
+async function generate() {
+  const topic  = document.getElementById("topic-input").value.trim();
+  const errEl  = document.getElementById("error-msg");
+  errEl.textContent = "";
+
+  if (!topic) { errEl.textContent = "Pehle topic likho!"; return; }
+
+  // ✅ RATE LIMIT CHECK (before calling API)
+  const limitCheck = checkRateLimit();
+  if (!limitCheck.allowed) {
+    showRateBanner(limitCheck.reason);
+    if (!state.isPro && state.usesToday >= CONFIG.FREE_DAILY) showPaywall();
+    return;
+  }
+
+  const btn = document.getElementById("gen-btn");
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span> AI likh raha hai...`;
+  document.getElementById("output-box").style.display = "none";
+
+  try {
+    const prompt = `${state.selectedType.prompt} "${topic}". 
+Tone: ${state.tone}. 
+Language: ${state.language}${state.language === "Hinglish" ? " (mix of Hindi and English, Roman script)" : ""}.
+Be engaging, creative and professional. Format it nicely.`;
+
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": "YOUR_CLAUDE_API_KEY_HERE",   // ← Claude API key lagao
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-calls": "true"
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      // Handle different error types gracefully
+      if (res.status === 429) {
+        throw new Error("API rate limit ho gayi! Thodi der baad try karo. ⏳");
+      } else if (res.status === 401) {
+        throw new Error("API key galat hai! Developer se contact karo. 🔑");
+      } else if (res.status === 529 || res.status === 503) {
+        throw new Error("AI server busy hai! 30 seconds baad try karo. 🔄");
+      } else {
+        throw new Error(errData.error?.message || `Server error (${res.status})`);
+      }
+    }
+
+    const data = await res.json();
+    const text = data.content?.[0]?.text || "Kuch output nahi mila.";
+
+    // ✅ Only count usage AFTER successful API call
+    incUses();
+    renderStatus();
+
+    const words = text.trim().split(/\s+/).length;
+    document.getElementById("word-count").textContent = `${words} words`;
+    document.getElementById("output-text").textContent = text;
+    const outBox = document.getElementById("output-box");
+    outBox.style.display = "block";
+    outBox.scrollIntoView({ behavior: "smooth", block: "start" });
+
+  } catch (err) {
+    errEl.textContent = `❌ ${err.message}`;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = "✦ Content Generate Karo";
+  }
+}
+
+// ── Copy ──────────────────────────────────────────
+function setupCopy() {
+  const btn = document.getElementById("copy-btn");
+  btn.onclick = () => {
+    const text = document.getElementById("output-text").textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = "✅ Copied!";
+      btn.classList.add("copied");
+      setTimeout(() => { btn.textContent = "📋 Copy"; btn.classList.remove("copied"); }, 2000);
+    });
+  };
+}
+
+// ── Paywall / Payment ─────────────────────────────
+function showPaywall() { document.getElementById("paywall").classList.add("show"); }
+function hidePaywall() { document.getElementById("paywall").classList.remove("show"); }
+
+function setupPayment() {
+  document.getElementById("back-btn").onclick = hidePaywall;
+  document.getElementById("pay-btn").onclick = () => {
+    const payBtn = document.getElementById("pay-btn");
+    payBtn.disabled = true;
+    payBtn.textContent = "Processing...";
+
+    if (typeof Razorpay === "undefined" || CONFIG.RAZORPAY_KEY.includes("XXXXX")) {
+      // Demo mode — direct unlock
+      unlockPro();
+      hidePaywall();
+      renderAll();
+      showToast("🎉 Pro unlock ho gaya! Sab features available!");
+      payBtn.disabled = false;
+      payBtn.textContent = "🚀 Pro Upgrade Karo — ₹129/month";
+      return;
+    }
+
+    const rzp = new Razorpay({
+      key: CONFIG.RAZORPAY_KEY,
+      amount: CONFIG.PRO_AMOUNT,
+      currency: "INR",
+      name: CONFIG.APP_NAME,
+      description: "Pro Subscription - Monthly",
+      handler: function(response) {
+        unlockPro();
+        hidePaywall();
+        renderAll();
+        showToast("🎉 Pro unlock ho gaya! Sab features available!");
+      },
+      modal: { ondismiss: () => { payBtn.disabled = false; payBtn.textContent = "🚀 Pro Upgrade Karo — ₹199/month"; } },
+      theme: { color: "#b4ff78" }
+    });
+    rzp.open();
+  };
+}
+
+// ── Toast ─────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 4000);
+}
+
+// ── PWA Install ───────────────────────────────────
+let deferredPrompt = null;
+window.addEventListener("beforeinstall
