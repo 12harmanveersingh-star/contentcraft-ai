@@ -509,20 +509,13 @@ Tone: ${state.tone}.
 Language: ${state.language}${state.language === "Hinglish" ? " (mix of Hindi and English, Roman script)" : ""}.
 Be engaging, creative and professional. Format it nicely.`;
 
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": "YOUR_CLAUDE_API_KEY_HERE",   // ← Claude API key lagao
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-calls": "true"
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 1000,
-        messages: [{ role: "user", content: prompt }]
-      })
-    });
+    const res = await fetch("/api/generate", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ prompt })
+});
 
     if (!res.ok) {
       const errData = await res.json().catch(() => ({}));
